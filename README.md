@@ -30,6 +30,8 @@ DB_PASSWORD=laravel_pass
 * Laravel 8.0
 * MySQL 8.0.26
 
+## ER図
+![drawio](https://github.com/user-attachments/assets/bf8e0b9c-91a1-46b8-b967-0ce2e3f6766f)
 
 
  
