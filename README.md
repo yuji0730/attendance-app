@@ -4,7 +4,8 @@
 
 Dockerビルド 
  1. `git clone git@github.com:yuji0730/attendance-app.git`
- 2. `docker-compose up -d—build`
+ 2. `cd attendance-app`
+ 3. `docker-compose up -d--build`
  
 laravel環境構築 
 1. `docker-compose exec php bash`
