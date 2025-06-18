@@ -1,8 +1,8 @@
 <header class="header">
     <div class="logo">
-        <a href="/">
-            <img src="{{ asset('images/logo.svg') }}" alt="COACHTECH">
-        </a>
+
+        <img src="{{ asset('images/logo.svg') }}" alt="COACHTECH">
+
     </div>
 
     @auth

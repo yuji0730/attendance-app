@@ -1,0 +1,137 @@
+body {
+    background-color: #f3f2f5;
+    font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+}
+
+.detail-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 30px;
+    box-sizing: border-box;
+}
+
+.title {
+    font-size: 20px;
+    font-weight: bold;
+    border-left: 5px solid #000;
+    padding-left: 10px;
+    margin-bottom: 20px;
+    text-align: left;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.attendance-card {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.05);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.row {
+    display: flex;
+    padding: 20px 0;
+    border-bottom: 1px solid #eee;
+    align-items: center;
+}
+
+.label {
+    width: 150px;
+    font-weight: bold;
+    color: #333;
+    text-align: left;
+    margin-right: 70px;
+}
+
+.value {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: flex-start;
+}
+
+.value input[type="text"] {
+    padding: 8px;
+    width: 100px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.value textarea {
+    width: 310px;
+    height: 60px;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    resize: none;
+}
+
+.separator {
+    font-weight: bold;
+    font-size: 18px;
+    margin: 0 8px;
+}
+
+.space {
+    margin: 0 65px;
+}
+
+.form-actions {
+    width: 100%;
+    text-align: right;
+    margin-top: 20px;
+    padding-right: 0;
+    box-sizing: border-box;
+}
+
+.submit-button {
+    background-color: #000;
+    color: #fff;
+    padding: 10px 30px;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.submit-button:hover {
+    background-color: #444;
+}
+
+.pending-message {
+    color: #d60000;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.submit-button--disabled {
+    background-color: #888;
+    cursor: default;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.submit-button--disabled:hover {
+    background-color: #888;
+}
+
+.error-message {
+    color: #d60000;
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+

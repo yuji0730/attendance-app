@@ -26,6 +26,7 @@ class ModificationRequestStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'date' => 'required|date',
             'clock_in' => 'required|date_format:H:i',
             'clock_out' => 'required|date_format:H:i',
             'rests' => 'array|nullable',

@@ -23,6 +23,13 @@ class UsersSeeder extends Seeder
             'is_admin' => false,
         ]);
 
+        User::create([
+            'name' => '西伶奈',
+            'email' => 'reina.n@coachtech.com',
+            'password' => Hash::make('password'),
+            'is_admin' => false,
+        ]);
+
         // 管理者
         User::create([
             'name' => '管理者 花子',

@@ -53,6 +53,8 @@ class ModificationRequestController extends Controller
                 ->where('status', 'approved')
                 ->orderBy('created_at', 'desc')
                 ->get();
+
+            $title = '申請一覧ページ（管理者）';
         } else {
             // 一般ユーザー：自分の申請一覧
             $pendingRequests = ModificationRequest::with('attendance')
@@ -66,13 +68,18 @@ class ModificationRequestController extends Controller
                 ->where('status', 'approved')
                 ->orderBy('created_at', 'desc')
                 ->get();
+
+            $title = '申請一覧ページ（一般ユーザー）';
         }
 
         return view('request', [
             'pendingRequests' => $pendingRequests,
             'approvedRequests' => $approvedRequests,
             'isAdmin' => $user->is_admin,
+            'title' => $title,
         ]);
     }
+
+
 
 }

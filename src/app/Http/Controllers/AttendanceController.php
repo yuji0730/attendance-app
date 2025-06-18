@@ -127,6 +127,31 @@ class AttendanceController extends Controller
 
 
 
+    // public function index(Request $request)
+    // {
+    //     $user = auth()->user();
+    //     $currentMonth = $request->input('month')
+    //         ? Carbon::parse($request->input('month'))
+    //         : now()->startOfMonth();
+
+    //     $attendances = Attendance::with('rests')
+    //         ->where('user_id', $user->id)
+    //         ->whereBetween('date', [
+    //             $currentMonth->copy()->startOfMonth(),
+    //             $currentMonth->copy()->endOfMonth()
+    //         ])
+    //         ->get();
+
+    //     $daysInMonth = collect();
+    //     $start = $currentMonth->copy()->startOfMonth();
+    //     $end = $currentMonth->copy()->endOfMonth();
+    //     for ($date = $start; $date <= $end; $date->addDay()) {
+    //         $daysInMonth->push($date->copy());
+    //     }
+
+    //     return view('index', compact('attendances', 'daysInMonth', 'currentMonth'));
+    // }
+
     public function index(Request $request)
     {
         $user = auth()->user();
@@ -134,17 +159,45 @@ class AttendanceController extends Controller
             ? Carbon::parse($request->input('month'))
             : now()->startOfMonth();
 
-        $attendances = Attendance::with('rests')
+        // 勤怠レコードを取得
+        $attendances = Attendance::with(['rests', 'modificationRequest'])
             ->where('user_id', $user->id)
             ->whereBetween('date', [
                 $currentMonth->copy()->startOfMonth(),
                 $currentMonth->copy()->endOfMonth()
             ])
             ->get();
-            // ->keyBy(function ($item) {
-            //     return Carbon::parse($item->date)->format('Y-m-d'); // ここを追加
-            // });
 
+        // 承認済み修正申請（attendanceが存在しない日分のみ）を取得
+        $approvedModsWithoutAttendance = \App\Models\ModificationRequest::where('user_id', $user->id)
+            ->where('status', 'approved')
+            ->whereBetween('date', [
+                $currentMonth->copy()->startOfMonth(),
+                $currentMonth->copy()->endOfMonth()
+            ])
+            ->whereDoesntHave('attendance') // これが存在しない勤怠
+            ->get();
+
+        // 仮の Attendance インスタンスを作成
+        foreach ($approvedModsWithoutAttendance as $mod) {
+            $virtualAttendance = new \App\Models\Attendance([
+                'id' => null,
+                'user_id' => $user->id,
+                'date' => $mod->date,
+                'clock_in' => $mod->clock_in,
+                'clock_out' => $mod->clock_out,
+                'remarks' => $mod->remarks,
+            ]);
+            // 関係を設定
+            $virtualAttendance->setRelation('modificationRequest', $mod);
+            $virtualAttendance->setRelation('rests', collect()); // 空のコレクションで初期化
+            $attendances->push($virtualAttendance);
+        }
+
+        // 表示のため日付でグループ化
+        $attendances = $attendances->keyBy('date');
+
+        // 対象月の日付リスト
         $daysInMonth = collect();
         $start = $currentMonth->copy()->startOfMonth();
         $end = $currentMonth->copy()->endOfMonth();
@@ -155,12 +208,111 @@ class AttendanceController extends Controller
         return view('index', compact('attendances', 'daysInMonth', 'currentMonth'));
     }
 
+
+
+    // public function detail($id)
+    // {
+    //     if ($id == -1) {
+    //         $date = request()->query('date');
+
+    //         $attendance = new Attendance([
+    //             'id' => null,
+    //             'date' => $date,
+    //             'clock_in' => null,
+    //             'clock_out' => null,
+    //             'rests' => collect(),
+    //             'remarks' => '',
+    //         ]);
+
+    //         // 修正申請を取得
+    //         $modificationRequest = \App\Models\ModificationRequest::with('user')
+    //             ->where('user_id', auth()->id())
+    //             ->where('date', $date)
+    //             ->latest()
+    //             ->first();
+
+    //         if ($modificationRequest && in_array($modificationRequest->status, ['pending', 'approved'])) {
+    //             $attendance->clock_in = $modificationRequest->clock_in;
+    //             $attendance->clock_out = $modificationRequest->clock_out;
+    //             $attendance->remarks = $modificationRequest->remarks;
+
+    //             // restsの形式が文字列(JSON)か配列かを判別して処理
+    //             $restsArray = [];
+
+    //             if (is_string($modificationRequest->rests)) {
+    //                 $decoded = json_decode($modificationRequest->rests, true);
+    //                 $restsArray = is_array($decoded) ? $decoded : [];
+    //             } elseif (is_array($modificationRequest->rests)) {
+    //                 $restsArray = $modificationRequest->rests;
+    //             }
+
+    //             $restCollection = collect();
+    //             foreach ($restsArray as $restData) {
+    //                 $restCollection->push(new \App\Models\Rest([
+    //                     'start_time' => $restData['start_time'] ?? null,
+    //                     'end_time' => $restData['end_time'] ?? null,
+    //                 ]));
+    //             }
+
+    //             $attendance->setRelation('rests', $restCollection);
+    //         }
+    //     } else {
+    //         $attendance = Attendance::with('rests', 'modificationRequest.user')->findOrFail($id);
+
+    //         $modificationRequest = $attendance->modificationRequest;
+
+    //         if ($modificationRequest && in_array($modificationRequest->status, ['pending', 'approved'])) {
+    //             $attendance->clock_in = $modificationRequest->clock_in ?? $attendance->clock_in;
+    //             $attendance->clock_out = $modificationRequest->clock_out ?? $attendance->clock_out;
+    //             $attendance->remarks = $modificationRequest->remarks ?? $attendance->remarks;
+
+    //             if ($modificationRequest->rests) {
+    //                 $restsArray = is_string($modificationRequest->rests)
+    //                     ? json_decode($modificationRequest->rests, true)
+    //                     : $modificationRequest->rests;
+
+    //                 $newRests = collect();
+
+    //                 foreach ($restsArray as $restData) {
+    //                     $newRests->push((object)[
+    //                         'start_time' => $restData['start_time'] ?? null,
+    //                         'end_time' => $restData['end_time'] ?? null,
+    //                     ]);
+    //                 }
+
+    //                 $attendance->rests = $newRests;
+    //             }
+    //         }
+    //     }
+
+    //     $userName = optional(optional($modificationRequest)->user)->name ?? auth()->user()->name;
+    //     $date = $attendance->date;
+    //     $status = optional($modificationRequest)->status;
+
+    //     return view('detail', compact('attendance', 'userName', 'date', 'status'));
+    // }
+
+
     public function detail($id)
     {
-        // 1. IDが-1などの空データ用の場合は、リクエストから日付を取得
-        if ($id == -1) {
-            $date = request()->query('date');
+        $date = request()->query('date');
+        $targetUserId = null;
 
+        $isManager = auth()->user()->is_admin == 1;
+
+        if ($isManager) {
+            $targetUserId = request()->query('user_id');
+
+            if (!$targetUserId || !is_numeric($targetUserId)) {
+                abort(400, '管理者は正しいユーザーIDを指定してください。');
+            }
+
+            $targetUserId = (int) $targetUserId;
+        } else {
+            $targetUserId = auth()->id();
+        }
+
+        if ($id == -1) {
             $attendance = new Attendance([
                 'id' => null,
                 'date' => $date,
@@ -169,24 +321,77 @@ class AttendanceController extends Controller
                 'rests' => collect(),
                 'remarks' => '',
             ]);
-            $modificationRequest = \App\Models\ModificationRequest::where('user_id', auth()->id())
-                ->where('date', $date) // ここはmodification_requestsテーブルに日付カラムがある想定。もしなければ勤怠IDで紐付けしているので工夫が必要。
+
+            $modificationRequest = \App\Models\ModificationRequest::with('user')
+                ->where('user_id', $targetUserId)
+                ->where('date', $date)
                 ->latest()
                 ->first();
-            $status = $modificationRequest ? $modificationRequest->status : null;
+
+            if ($modificationRequest && in_array($modificationRequest->status, ['pending', 'approved'])) {
+                $attendance->clock_in = $modificationRequest->clock_in;
+                $attendance->clock_out = $modificationRequest->clock_out;
+                $attendance->remarks = $modificationRequest->remarks;
+
+                $restsArray = [];
+
+                if (is_string($modificationRequest->rests)) {
+                    $decoded = json_decode($modificationRequest->rests, true);
+                    $restsArray = is_array($decoded) ? $decoded : [];
+                } elseif (is_array($modificationRequest->rests)) {
+                    $restsArray = $modificationRequest->rests;
+                }
+
+                $restCollection = collect();
+                foreach ($restsArray as $restData) {
+                    $restCollection->push(new \App\Models\Rest([
+                        'start_time' => $restData['start_time'] ?? null,
+                        'end_time' => $restData['end_time'] ?? null,
+                    ]));
+                }
+
+                $attendance->setRelation('rests', $restCollection);
+            }
 
         } else {
-            $attendance = Attendance::with('rests', 'modificationRequest')->findOrFail($id);
-            $date = $attendance->date;
-            $status = optional($attendance->modificationRequest)->status;
+            $attendance = Attendance::with('rests', 'modificationRequest.user', 'user')
+                ->where('id', $id)
+                ->where('user_id', $targetUserId)
+                ->firstOrFail();
 
+            $modificationRequest = $attendance->modificationRequest;
+
+            if ($modificationRequest && in_array($modificationRequest->status, ['pending', 'approved'])) {
+                $attendance->clock_in = $modificationRequest->clock_in ?? $attendance->clock_in;
+                $attendance->clock_out = $modificationRequest->clock_out ?? $attendance->clock_out;
+                $attendance->remarks = $modificationRequest->remarks ?? $attendance->remarks;
+
+                if ($modificationRequest->rests) {
+                    $restsArray = is_string($modificationRequest->rests)
+                        ? json_decode($modificationRequest->rests, true)
+                        : $modificationRequest->rests;
+
+                    $newRests = collect();
+                    foreach ($restsArray as $restData) {
+                        $newRests->push((object)[
+                            'start_time' => $restData['start_time'] ?? null,
+                            'end_time' => $restData['end_time'] ?? null,
+                        ]);
+                    }
+
+                    $attendance->rests = $newRests;
+                }
+            }
         }
 
-        // 2. ログインユーザーの名前
-        $userName = auth()->user()->name;
+        $user = \App\Models\User::find($targetUserId);
+        $userName = $user ? $user->name : '不明なユーザー';
+        $status = optional($modificationRequest)->status;
 
-        return view('detail', compact('attendance', 'userName', 'date','status'));
+        return view('detail', compact('attendance', 'userName', 'date', 'status'));
     }
+
+
 
 
 
