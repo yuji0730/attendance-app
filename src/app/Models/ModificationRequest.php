@@ -32,5 +32,4 @@ class ModificationRequest extends Model
     public function attendance() {
         return $this->belongsTo(Attendance::class);
     }
-
 }

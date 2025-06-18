@@ -14,6 +14,14 @@ class CreateModificationRequestsTable extends Migration
     public function up()
     {
         Schema::create('modification_requests', function (Blueprint $table) {
+            // $table->id();
+            // $table->foreignId('attendance_id')->constrained()->onDelete('cascade');
+            // $table->time('requested_clock_in')->nullable();
+            // $table->time('requested_clock_out')->nullable();
+            // $table->json('requested_breaks')->nullable();
+            // $table->text('note');
+            // $table->enum('status', ['承認待ち', '承認済み'])->default('承認待ち');
+            // $table->timestamps();
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('attendance_id')->nullable();
@@ -21,7 +29,7 @@ class CreateModificationRequestsTable extends Migration
             $table->time('clock_in')->nullable();
             $table->time('clock_out')->nullable();
             $table->json('rests')->nullable(); // JSON形式で休憩時間を保持
-            $table->text('remarks');
+            $table->text('remarks')->nullable();
             $table->string('status')->default('pending'); // pending, approved
             $table->timestamps();
 

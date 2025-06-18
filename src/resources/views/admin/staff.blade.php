@@ -21,11 +21,21 @@
             </tr>
         </thead>
         <tbody>
+            @php
+                $staffs = [
+                    ['name' => '西 伶奈', 'email' => 'reina.n@coachtech.com'],
+                    ['name' => '山田 太郎', 'email' => 'taro.y@coachtech.com'],
+                    ['name' => '増田 一世', 'email' => 'issei.m@coachtech.com'],
+                    ['name' => '山本 敬吉', 'email' => 'keikichi.y@coachtech.com'],
+                    ['name' => '秋田 朋美', 'email' => 'tomomi.a@coachtech.com'],
+                    ['name' => '中西 教夫', 'email' => 'norio.n@coachtech.com'],
+                ];
+            @endphp
             @foreach ($staffs as $staff)
             <tr>
-                <td>{{ $staff->name }}</td>
-                <td>{{ $staff->email }}</td>
-                <td><a href="{{ route('admin.attendance.staff', ['id' => $staff->id]) }}" class="detail-link">詳細</a></td>
+                <td>{{ $staff['name'] }}</td>
+                <td>{{ $staff['email'] }}</td>
+                <td><a href="#" class="detail-link">詳細</a></td>
             </tr>
             @endforeach
         </tbody>

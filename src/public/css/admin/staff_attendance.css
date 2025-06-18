@@ -3,13 +3,13 @@ body {
     font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
 }
 
-.attendance-container {
+.monthly-container {
     max-width: 960px;
     margin: 40px auto;
     padding: 0 16px;
 }
 
-.heading {
+.page-title {
     font-size: 20px;
     font-weight: bold;
     border-left: 5px solid #000;
@@ -17,63 +17,55 @@ body {
     margin-bottom: 30px;
 }
 
-.month-controls {
+.month-selector {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    gap: 32px;
-    margin-bottom: 20px;
-    font-size: 16px;
-}
-
-.nav-button {
-    background-color: transparent;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-    color: #444;
-    text-decoration: none;
+    background: white;
+    padding: 12px 24px;
+    border-radius: 10px;
+    margin-bottom: 24px;
+    font-size: 14px;
 }
 
 .current-month {
     display: flex;
     align-items: center;
-    gap: 8px;
     font-weight: bold;
-    font-size: 18px;
+    gap: 8px;
 }
 
-.attendance-table {
+.arrow {
+    color: black;
+    text-decoration: none;
+}
+
+.monthly-table {
     width: 100%;
     border-collapse: collapse;
     background-color: #fff;
     border-radius: 12px;
     overflow: hidden;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.05);
 }
 
-.attendance-table thead {
+.monthly-table th,
+.monthly-table td {
+    padding: 12px;
+    text-align: center;
+    font-size: 14px;
+    border-bottom: 1px solid #eee;
+}
+
+.monthly-table thead {
     background-color: #f5f5f5;
     font-weight: bold;
-    font-size: 14px;
-}
-
-.attendance-table th,
-.attendance-table td {
-    padding: 14px;
-    text-align: center;
-    border-bottom: 1px solid #eee;
-    font-size: 14px;
-    white-space: nowrap;
-}
-
-.attendance-table tbody tr:last-child td {
-    border-bottom: none;
 }
 
 .detail-link {
-    color: #000;
     font-weight: bold;
     text-decoration: underline;
+    color: #000;
 }
 
 .csv-button-container {

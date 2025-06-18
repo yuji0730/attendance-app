@@ -4,7 +4,8 @@
     $user = Auth::user();
 @endphp
 
-@section('title', $title)
+@section('title', $user && $user->is_admin ? '申請一覧ページ（管理者）' : '申請一覧ページ（一般ユーザー）')
+
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/request.css') }}">
@@ -46,12 +47,7 @@
                         <td>{{ $request->remarks }}</td>
                         <td>{{ $request->created_at->format('Y/m/d') }}</td>
                         <td>
-                            @if(Auth::user()->is_admin)
-                                <a href="{{ route('admin.approval.show', ['attendance_correct_request' => $request->id]) }}" class="detail-link">詳細</a>
-                            @else
-                                <a href="{{ route('attendance.detail', ['id' => $request->attendance_id ?? -1]) }}?date={{ $request->date }}" class="detail-link">詳細</a>
-                            @endif
-                            {{-- <a href="{{ route('attendance.detail', ['id' => $request->attendance_id ?? -1]) }}?date={{ $request->date }}" class="detail-link">詳細</a> --}}
+                            <a href="{{ route('attendance.detail', ['id' => $request->attendance_id ?? -1]) }}?date={{ $request->date }}" class="detail-link">詳細</a>
                         </td>
                     </tr>
                 @empty
@@ -86,11 +82,7 @@
                         <td>{{ $request->remarks }}</td>
                         <td>{{ $request->created_at->format('Y/m/d') }}</td>
                         <td>
-                            @if(Auth::user()->is_admin)
-                                <a href="{{ route('admin.approval.show', ['attendance_correct_request' => $request->id]) }}" class="detail-link">詳細</a>
-                            @else
-                                <a href="{{ route('attendance.detail', ['id' => $request->attendance_id ?? -1]) }}?date={{ $request->date }}" class="detail-link">詳細</a>
-                            @endif
+                            <a href="{{ route('attendance.detail', ['id' => $request->attendance_id ?? -1]) }}?date={{ $request->date }}" class="detail-link">詳細</a>
                         </td>
                     </tr>
                 @empty

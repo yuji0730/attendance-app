@@ -8,7 +8,6 @@ use App\Models\Attendance;
 use App\Http\Controllers\ModificationRequestController;
 use App\Models\ModificationRequest;
 use App\Http\Controllers\AdminAttendanceController;
-use App\Http\Controllers\AdminModificationRequestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,13 +20,19 @@ use App\Http\Controllers\AdminModificationRequestController;
 |
 */
 
+Route::get('/', function () {
+    return view('welcome');
+});
+
+
+// Route::get('/admin/login', function () {
+//     return view('admin.auth.login');})->name('admin.login');
 Route::get('/admin/login', [AuthenticatedSessionController::class, 'create'])
     ->name('admin.login');
 
 Route::post('/login', [LoginController::class, 'store'])->name('login');
 
 Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('attendance.index');
-
 Route::get('/attendance/{id}', [AttendanceController::class, 'detail'])->name('attendance.detail');
 
 Route::get('/attendance', [AttendanceController::class, 'showClock'])->name('attendance.show');
@@ -46,22 +51,3 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'index'])->name('admin.attendance.index');
     Route::get('/admin/staff/list', [AdminAttendanceController::class, 'staff'])->name('admin.staff.index');
 });
-
-Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/admin/attendance/staff/{id}', [AdminAttendanceController::class, 'attendance'])->name('admin.attendance.staff');
-    Route::get('/admin/attendance/staff/{id}/export', [AdminAttendanceController::class, 'exportCsv'])->name('admin.attendance.staff.export');
-});
-
-
-Route::middleware(['auth'])->group(function () {
-    Route::get('/stamp_correction_request/approve/{attendance_correct_request}',[AdminModificationRequestController::class, 'showApproval'])->name('admin.approval.show');
-    Route::post('/stamp_correction_request/approve/{id}', [AdminModificationRequestController::class, 'approve'])->name('admin.request.approve');
-});
-
-Route::middleware(['auth', 'admin'])->group(function () {
-    Route::post('/admin/attendance/{id}/update', [AdminAttendanceController::class, 'update'])->name('admin.attendance.update');
-    Route::post('/admin/attendance/store', [AdminAttendanceController::class, 'store'])->name('admin.attendance.store');
-});
-
-
-

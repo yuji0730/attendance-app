@@ -16,12 +16,6 @@ class Attendance extends Model
         'clock_out',
     ];
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-
     public function rests()
     {
         return $this->hasMany(Rest::class);
